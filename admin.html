@@ -3,262 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PMP Simulator — Admin</title>
+<title>PMP Simulator — Account Generator</title>
 <style>
-:root{--bg:#0f172a;--panel:#1e293b;--line:#334155;--ink:#e2e8f0;--muted:#94a3b8;--brand:#6366f1;--brand-d:#4f46e5;
-  --green:#22c55e;--green-bg:#0f2a1a;--red:#ef4444;--red-bg:#2a1212;--amber:#f59e0b}
-*{box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);
-  margin:0;min-height:100vh;padding:28px 16px}
-.wrap{max-width:720px;margin:0 auto}
-h1{font-size:24px;margin:0 0 4px}
-.lead{color:var(--muted);font-size:14px;margin:0 0 24px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 20px 40px -24px rgba(0,0,0,.6)}
-.panel h2{font-size:16px;margin:0 0 14px;display:flex;align-items:center;gap:8px}
-label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px;color:#cbd5e1}
-input{width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:#fff;font-size:14px}
-input:focus{outline:2px solid var(--brand);border-color:var(--brand)}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row>div{flex:1;min-width:180px}
-button{cursor:pointer;border:none;font-family:inherit;font-weight:700;border-radius:10px;transition:.12s}
-.btn{background:var(--brand-d);color:#fff;padding:11px 16px;font-size:14px}
-.btn:hover{background:var(--brand)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.sm{padding:7px 12px;font-size:13px}
-.btn.grey{background:#334155}.btn.grey:hover{background:#475569}
-.btn.danger{background:#7f1d1d}.btn.danger:hover{background:#991b1b}
-.msg{font-size:13.5px;font-weight:600;margin-top:12px;min-height:18px}
-.msg.ok{color:var(--green)}.msg.err{color:var(--red)}
-.status{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px}
-.status.on{background:var(--green-bg);color:var(--green)}
-.status.off{background:var(--red-bg);color:var(--red)}
-.userlist{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-.urow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 14px}
-.urow .info b{font-size:14px}
-.urow .info small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
-.urow .acts{display:flex;gap:6px}
-.empty{color:var(--muted);font-size:13px;padding:14px 0;text-align:center}
-details{margin-top:8px}
-summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:600}
-.help{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:10px}
-.help a{color:#a5b4fc}
-code{background:var(--bg);padding:2px 6px;border-radius:5px;color:#a5b4fc;font-size:12px}
-.tokrow{display:flex;gap:8px;flex-wrap:wrap}
-.tokrow input{flex:1;min-width:200px}
-.hide{display:none!important}
-.note{font-size:12px;color:var(--amber);background:#2a2110;border:1px solid #5c451a;padding:9px 12px;border-radius:9px;margin-top:12px;line-height:1.5}
-.topnav{margin-bottom:16px}
-.topnav a{color:#a5b4fc;font-size:13px;text-decoration:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#0f172a;color:#e2e8f0;
+  min-height:100vh;margin:0;display:grid;place-items:center;padding:24px}
+.box{background:#1e293b;border:1px solid #334155;border-radius:18px;padding:32px;max-width:560px;width:100%;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+h1{font-size:22px;margin:0 0 6px}
+p.sub{color:#94a3b8;margin:0 0 22px;font-size:14px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;color:#cbd5e1}
+input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#fff;font-size:15px}
+input:focus{outline:2px solid #6366f1;border-color:#6366f1}
+button{margin-top:20px;width:100%;background:#4f46e5;color:#fff;border:none;padding:13px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer}
+button:hover{background:#4338ca}
+.out{margin-top:22px;display:none}
+.out.show{display:block}
+.jsonline{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all;color:#a5b4fc;line-height:1.5}
+.copy{background:#334155;margin-top:10px}
+.copy:hover{background:#475569}
+.steps{margin-top:26px;font-size:13px;color:#94a3b8;line-height:1.7;border-top:1px solid #334155;padding-top:18px}
+.steps b{color:#e2e8f0}
+code{background:#0f172a;padding:2px 6px;border-radius:5px;color:#a5b4fc}
+.note{margin-top:14px;font-size:12px;color:#f59e0b;background:#3a2a12;border:1px solid #78581f;padding:10px 12px;border-radius:9px}
+.tip{margin-top:14px;font-size:12.5px;color:#93c5fd;background:#0f2438;border:1px solid #1e4a6b;padding:10px 12px;border-radius:9px;line-height:1.5}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="topnav"><a href="./index.html">← Back to the simulator</a></div>
-  <h1>🔐 Admin — Manage Students</h1>
-  <p class="lead">Add or remove student logins. Changes publish to the live site automatically (~1 min).</p>
+<div class="box">
+  <h1>🔑 Account Generator</h1>
+  <p class="sub">Create a login for a client. Type their details, copy the generated line, and paste it into <code>data/users.json</code>, then commit on GitHub.</p>
 
-  <!-- TOKEN -->
-  <div class="panel">
-    <h2>1 · Connect <span id="connStatus" class="status off">Not connected</span></h2>
-    <div class="tokrow">
-      <input id="token" type="password" placeholder="Paste your GitHub access token (ghp_… or github_pat_…)">
-      <button class="btn" id="saveTok">Connect</button>
-      <button class="btn grey" id="clearTok">Disconnect</button>
-    </div>
-    <div class="msg" id="tokMsg"></div>
-    <details>
-      <summary>How do I get a token? (one-time, ~2 min)</summary>
-      <div class="help">
-        1. Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> (Fine-grained token).<br>
-        2. <b>Token name:</b> anything (e.g. “PMP admin”). <b>Expiration:</b> your choice.<br>
-        3. <b>Repository access</b> → “Only select repositories” → pick <code>montassarsallami122-spec.github.io</code>.<br>
-        4. <b>Permissions</b> → Repository permissions → <b>Contents</b> → <b>Read and write</b>.<br>
-        5. Click <b>Generate token</b>, copy it, and paste it above.<br>
-        <span style="color:#cbd5e1">The token is saved only in this browser (localStorage). It is never uploaded to the site.</span>
-      </div>
-    </details>
-    <div class="note">⚠️ Treat the token like a password. Anyone who has it can edit your repo. Use a fine-grained token limited to this one repo, as above.</div>
+  <label>Display name</label>
+  <input id="name" placeholder="e.g. Ahmed Ben Ali" autocomplete="off">
+  <label>Email (what they type to log in)</label>
+  <input id="user" type="email" placeholder="e.g. ahmed@example.com" autocomplete="off">
+  <label>Password</label>
+  <input id="pass" placeholder="e.g. Pmp2026!" autocomplete="off">
+
+  <button id="gen">Generate account line</button>
+
+  <div class="out" id="out">
+    <label>Paste this line into <code>data/users.json</code> (inside the [ ] list, comma-separated):</label>
+    <div class="jsonline" id="jsonline"></div>
+    <button class="copy" id="copy">Copy to clipboard</button>
+    <div class="note">⚠️ Note the password somewhere safe — it is hashed here and can’t be recovered from the file. To reset it, just generate a new line and replace the old one.</div>
   </div>
 
-  <!-- ADD USER -->
-  <div class="panel" id="addPanel">
-    <h2>2 · Add a student</h2>
-    <label>Full name</label>
-    <input id="name" placeholder="e.g. Ahmed Ben Ali" autocomplete="off">
-    <div class="row">
-      <div>
-        <label>Email (their login)</label>
-        <input id="email" type="email" placeholder="ahmed@example.com" autocomplete="off">
-      </div>
-      <div>
-        <label>Password</label>
-        <input id="pass" placeholder="e.g. Pmp2026!" autocomplete="off">
-      </div>
-    </div>
-    <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
-      <button class="btn" id="addBtn">Add &amp; publish</button>
-      <button class="btn grey sm" id="genPass">Suggest password</button>
-    </div>
-    <div class="msg" id="addMsg"></div>
-  </div>
+  <div class="tip">💡 Easiest option: just message your assistant “add user &lt;name&gt;, &lt;email&gt;, &lt;password&gt;” and it will be created and published for you — no steps needed.</div>
 
-  <!-- USER LIST -->
-  <div class="panel">
-    <h2>3 · Current students <span id="count" class="status off" style="background:#334155;color:#cbd5e1">0</span>
-      <button class="btn grey sm" id="refresh" style="margin-left:auto">Refresh</button></h2>
-    <div class="userlist" id="userlist"><div class="empty">Connect above, then this list loads.</div></div>
-    <div class="msg" id="listMsg"></div>
-  </div>
-
-  <!-- MANUAL FALLBACK -->
-  <div class="panel">
-    <details>
-      <summary>Manual mode (no token) — generate a line to paste yourself</summary>
-      <div class="help" style="margin-bottom:8px">Fill the “Add a student” fields above, then click here to get the JSON line for <code>data/users.json</code>.</div>
-      <button class="btn grey sm" id="genLine">Generate line</button>
-      <div id="lineOut" style="margin-top:10px"></div>
-    </details>
+  <div class="steps">
+    <b>Or do it yourself:</b><br>
+    1. Fill the fields above and click <b>Generate</b>.<br>
+    2. Open <code>data/users.json</code>, paste the line into the list (add a comma between entries).<br>
+    3. Save / commit on GitHub — the account is live in ~1 minute.<br>
+    4. Give the client their <b>email + password</b> and the site link.
   </div>
 </div>
 
 <script>
-const OWNER="montassarsallami122-spec", REPO="montassarsallami122-spec.github.io", PATH="data/users.json", BRANCH="main";
 const SALT="pmp_sim_v1"; // must match index.html
-const API=`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
-const $=s=>document.querySelector(s);
-let token=localStorage.getItem("pmp_admin_token")||"";
-let cache={users:[],sha:null};
-
-/* helpers */
-async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));
-  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
-const b64enc=s=>btoa(unescape(encodeURIComponent(s)));
-const b64dec=s=>decodeURIComponent(escape(atob(s.replace(/\s/g,""))));
-const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function msg(el,text,ok){const e=$(el);e.textContent=text;e.className="msg "+(ok?"ok":"err");}
-function headers(){const h={"Accept":"application/vnd.github+json"};if(token)h.Authorization="Bearer "+token;return h;}
-
-/* load users.json from GitHub */
-async function loadUsers(){
-  msg("#listMsg","Loading…",true);
-  try{
-    const r=await fetch(API+"?ref="+BRANCH+"&_="+Date.now(),{headers:headers()});
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const j=await r.json();
-    cache.sha=j.sha;
-    cache.users=JSON.parse(b64dec(j.content));
-    renderList();
-    msg("#listMsg","",true);
-  }catch(e){ msg("#listMsg","Could not load users ("+e.message+").",false); }
+async function sha256(text){
+  const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
-function renderList(){
-  const list=$("#userlist");
-  $("#count").textContent=cache.users.length;
-  if(!cache.users.length){list.innerHTML='<div class="empty">No students yet.</div>';return;}
-  list.innerHTML="";
-  cache.users.forEach((u,i)=>{
-    const row=document.createElement("div");row.className="urow";
-    row.innerHTML=`<div class="info"><b>${esc(u.name||u.u)}</b><small>${esc(u.u)}</small></div>
-      <div class="acts">
-        <button class="btn grey sm" data-reset="${i}">Reset pw</button>
-        <button class="btn danger sm" data-del="${i}">Remove</button>
-      </div>`;
-    list.appendChild(row);
-  });
-}
-
-/* write users.json back */
-async function commitUsers(commitMsg){
-  if(!token) throw new Error("Connect a token first.");
-  // re-fetch latest sha to avoid conflicts
-  const cur=await fetch(API+"?ref="+BRANCH+"&_="+Date.now(),{headers:headers()});
-  if(cur.ok){const j=await cur.json();cache.sha=j.sha;}
-  const body={message:commitMsg,content:b64enc(JSON.stringify(cache.users,null,1)+"\n"),sha:cache.sha,branch:BRANCH};
-  const r=await fetch(API,{method:"PUT",headers:headers(),body:JSON.stringify(body)});
-  if(!r.ok){const t=await r.text();throw new Error("HTTP "+r.status+" "+t.slice(0,120));}
-  const j=await r.json();cache.sha=j.content.sha;
-}
-
-/* actions */
-$("#saveTok").onclick=async()=>{
-  const t=$("#token").value.trim();
-  if(!t){msg("#tokMsg","Paste a token first.",false);return;}
-  token=t;localStorage.setItem("pmp_admin_token",t);
-  $("#token").value="";
-  setConn(true);
-  msg("#tokMsg","Connected. Loading students…",true);
-  await loadUsers();
-  msg("#tokMsg","Connected ✓",true);
+document.getElementById("gen").onclick=async()=>{
+  const name=document.getElementById("name").value.trim();
+  const u=document.getElementById("user").value.trim().toLowerCase();
+  const p=document.getElementById("pass").value;
+  if(!u||!p){alert("Email and password are required.");return;}
+  const h=await sha256(SALT+":"+p);
+  const line=JSON.stringify({u,h,name:name||u});
+  document.getElementById("jsonline").textContent=line;
+  document.getElementById("out").classList.add("show");
 };
-$("#clearTok").onclick=()=>{token="";localStorage.removeItem("pmp_admin_token");setConn(false);
-  $("#userlist").innerHTML='<div class="empty">Disconnected.</div>';$("#count").textContent="0";msg("#tokMsg","Disconnected.",true);};
-$("#refresh").onclick=loadUsers;
-
-$("#genPass").onclick=()=>{
-  const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-  let p="";for(let i=0;i<10;i++)p+=chars[Math.floor(Math.random()*chars.length)];
-  $("#pass").value=p+"!";
+document.getElementById("copy").onclick=()=>{
+  navigator.clipboard.writeText(document.getElementById("jsonline").textContent)
+    .then(()=>{const b=document.getElementById("copy");b.textContent="Copied ✓";setTimeout(()=>b.textContent="Copy to clipboard",1500);});
 };
-
-function readForm(){
-  return {name:$("#name").value.trim(), email:$("#email").value.trim().toLowerCase(), pass:$("#pass").value};
-}
-function validEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
-
-$("#addBtn").onclick=async()=>{
-  const {name,email,pass}=readForm();
-  if(!validEmail(email)){msg("#addMsg","Enter a valid email.",false);return;}
-  if(pass.length<4){msg("#addMsg","Password must be at least 4 characters.",false);return;}
-  if(!token){msg("#addMsg","Connect a token in step 1 first (or use Manual mode below).",false);return;}
-  if(cache.users.some(u=>u.u.toLowerCase()===email)){msg("#addMsg","That email already exists.",false);return;}
-  $("#addBtn").disabled=true;msg("#addMsg","Publishing…",true);
-  try{
-    const h=await sha256(SALT+":"+pass);
-    cache.users.push({u:email,h,name:name||email});
-    await commitUsers("Add student "+email);
-    renderList();
-    msg("#addMsg",`✓ Added ${email}. It’s live in ~1 min. Save the password: ${pass}`,true);
-    $("#name").value="";$("#email").value="";$("#pass").value="";
-  }catch(e){ cache.users.pop(); msg("#addMsg","Failed: "+e.message,false); }
-  $("#addBtn").disabled=false;
-};
-
-$("#userlist").onclick=async(e)=>{
-  const del=e.target.closest("[data-del]"), rst=e.target.closest("[data-reset]");
-  if(del){
-    const i=+del.dataset.del, u=cache.users[i];
-    if(!confirm(`Remove ${u.u}? They will lose access.`))return;
-    const removed=cache.users.splice(i,1)[0];renderList();
-    try{ await commitUsers("Remove student "+u.u); msg("#listMsg",`✓ Removed ${u.u}.`,true); }
-    catch(err){ cache.users.splice(i,0,removed);renderList(); msg("#listMsg","Failed: "+err.message,false); }
-  }
-  if(rst){
-    const i=+rst.dataset.reset, u=cache.users[i];
-    const np=prompt(`New password for ${u.u}:`);
-    if(!np)return;
-    const old=u.h;
-    try{ u.h=await sha256(SALT+":"+np); await commitUsers("Reset password "+u.u); msg("#listMsg",`✓ Password reset for ${u.u}. New password: ${np}`,true); }
-    catch(err){ u.h=old; msg("#listMsg","Failed: "+err.message,false); }
-  }
-};
-
-/* manual mode */
-$("#genLine").onclick=async()=>{
-  const {name,email,pass}=readForm();
-  if(!validEmail(email)||!pass){$("#lineOut").innerHTML='<span class="msg err">Fill a valid email + password above.</span>';return;}
-  const h=await sha256(SALT+":"+pass);
-  const line=JSON.stringify({u:email,h,name:name||email});
-  $("#lineOut").innerHTML=`<div style="background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:12px;font-family:monospace;font-size:12.5px;word-break:break-all;color:#a5b4fc">${esc(line)}</div>
-    <div class="help">Paste into <code>data/users.json</code> (comma-separated inside the [ ]), then commit on GitHub.</div>`;
-};
-
-function setConn(on){
-  const s=$("#connStatus");
-  s.textContent=on?"Connected":"Not connected";s.className="status "+(on?"on":"off");
-}
-
-/* init */
-if(token){setConn(true);loadUsers();}else{setConn(false);}
 </script>
 </body>
 </html>
