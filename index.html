@@ -193,8 +193,8 @@ header.app{background:linear-gradient(120deg,var(--bg),var(--bg2));color:#fff;po
     <div class="lock">🔒</div>
     <h2 id="loginTitle">Student Login</h2>
     <p id="loginSub">Enter the username and password provided to you.</p>
-    <label id="lblUser">Username</label>
-    <input id="loginUser" type="text" autocomplete="username" autocapitalize="none" spellcheck="false">
+    <label id="lblUser">Email</label>
+    <input id="loginUser" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com">
     <label id="lblPass">Password</label>
     <input id="loginPass" type="password" autocomplete="current-password">
     <div class="loginerr" id="loginErr"></div>
@@ -315,13 +315,13 @@ const STR={
       best:"Best",none:"Not attempted yet",select:"Select",answers:"answers",prev:"Previous Questions",remaining:"questions remaining",
       submit:"Submit Answer",finish:"Finish Exam",prevBtn:"Previous",qtime:"Question",
       breakTitle:"Section Break",breakMsg:"Take a moment to rest. The exam clock is paused. The next section starts automatically when the break ends.",
-      loginTitle:"Student Login",loginSub:"Enter the username and password provided to you.",lblUser:"Username",lblPass:"Password",loginBtn:"Log in",loginHint:"Don’t have an account? Contact your instructor for access.",logout:"Log out"},
+      loginTitle:"Student Login",loginSub:"Enter the email and password provided to you.",lblUser:"Email",lblPass:"Password",loginBtn:"Log in",loginHint:"Don’t have an account? Contact your instructor for access.",logout:"Log out"},
   fr:{hero:"Entraînez-vous jusqu'à la réussite",sub:"Entraînement PMP réaliste — une question à la fois, chrono par question, pauses de section, score instantané et explications complètes.",
       full:"Examens complets (180)",mini:"Mini examens (60)",quiz:"Quiz (25)",start:"Commencer",questions:"questions",min:"min",
       best:"Meilleur",none:"Jamais tenté",select:"Sélectionnez",answers:"réponses",prev:"Questions précédentes",remaining:"questions restantes",
       submit:"Valider la réponse",finish:"Terminer l'examen",prevBtn:"Précédent",qtime:"Question",
       breakTitle:"Pause de section",breakMsg:"Prenez un moment de repos. Le chrono est en pause. La section suivante démarre automatiquement à la fin de la pause.",
-      loginTitle:"Connexion étudiant",loginSub:"Saisissez le nom d’utilisateur et le mot de passe qui vous ont été fournis.",lblUser:"Nom d’utilisateur",lblPass:"Mot de passe",loginBtn:"Se connecter",loginHint:"Pas de compte ? Contactez votre formateur pour obtenir un accès.",logout:"Déconnexion"}
+      loginTitle:"Connexion étudiant",loginSub:"Saisissez l’adresse e-mail et le mot de passe qui vous ont été fournis.",lblUser:"E-mail",lblPass:"Mot de passe",loginBtn:"Se connecter",loginHint:"Pas de compte ? Contactez votre formateur pour obtenir un accès.",logout:"Déconnexion"}
 };
 const T=()=>STR[state.lang];
 
@@ -374,14 +374,14 @@ function bindAuth(){
     const u=$("#loginUser").value.trim().toLowerCase();
     const p=$("#loginPass").value;
     const err=$("#loginErr"); err.textContent="";
-    if(!u||!p){err.textContent="Please enter your username and password.";return;}
+    if(!u||!p){err.textContent="Please enter your email and password.";return;}
     $("#loginBtn").disabled=true;
     try{
       const users=await (await fetch(DATA_DIR+"users.json?_="+Date.now())).json();
       const h=await sha256(SALT+":"+p);
       const found=users.find(x=>x.u.toLowerCase()===u && x.h===h);
       if(found){ setSession({u:found.u,name:found.name}); $("#loginPass").value=""; await enterApp(); }
-      else { err.textContent="Incorrect username or password."; }
+      else { err.textContent="Incorrect email or password."; }
     }catch(ex){ err.textContent="Could not verify login. Try again."; }
     $("#loginBtn").disabled=false;
   });
