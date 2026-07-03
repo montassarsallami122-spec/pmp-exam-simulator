@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMP Simulator — Account Generator</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#0f172a;color:#e2e8f0;
+  min-height:100vh;margin:0;display:grid;place-items:center;padding:24px}
+.box{background:#1e293b;border:1px solid #334155;border-radius:18px;padding:32px;max-width:560px;width:100%;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+h1{font-size:22px;margin:0 0 6px}
+p.sub{color:#94a3b8;margin:0 0 22px;font-size:14px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;color:#cbd5e1}
+input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#fff;font-size:15px}
+input:focus{outline:2px solid #6366f1;border-color:#6366f1}
+button{margin-top:20px;width:100%;background:#4f46e5;color:#fff;border:none;padding:13px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer}
+button:hover{background:#4338ca}
+.out{margin-top:22px;display:none}
+.out.show{display:block}
+.jsonline{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all;color:#a5b4fc;line-height:1.5}
+.copy{background:#334155;margin-top:10px}
+.copy:hover{background:#475569}
+.steps{margin-top:26px;font-size:13px;color:#94a3b8;line-height:1.7;border-top:1px solid #334155;padding-top:18px}
+.steps b{color:#e2e8f0}
+code{background:#0f172a;padding:2px 6px;border-radius:5px;color:#a5b4fc}
+.note{margin-top:14px;font-size:12px;color:#f59e0b;background:#3a2a12;border:1px solid #78581f;padding:10px 12px;border-radius:9px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🔑 Account Generator</h1>
+  <p class="sub">Create a login for a client. Type their details, copy the generated line, and paste it into <code>data/users.json</code>, then push to GitHub.</p>
+
+  <label>Display name</label>
+  <input id="name" placeholder="e.g. Ahmed Ben Ali" autocomplete="off">
+  <label>Username (what they type to log in)</label>
+  <input id="user" placeholder="e.g. ahmed" autocomplete="off">
+  <label>Password</label>
+  <input id="pass" placeholder="e.g. Pmp2026!" autocomplete="off">
+
+  <button id="gen">Generate account line</button>
+
+  <div class="out" id="out">
+    <label>Paste this line into <code>data/users.json</code> (inside the [ ] list, comma-separated):</label>
+    <div class="jsonline" id="jsonline"></div>
+    <button class="copy" id="copy">Copy to clipboard</button>
+    <div class="note">⚠️ Note the password somewhere safe — it is hashed here and can’t be recovered from the file. To reset it, just generate a new line and replace the old one.</div>
+  </div>
+
+  <div class="steps">
+    <b>How to add the account:</b><br>
+    1. Fill the fields above and click <b>Generate</b>.<br>
+    2. Open <code>data/users.json</code>, paste the line into the list (add a comma between entries).<br>
+    3. Save, then <code>git push</code> — the account is live in ~1 minute.<br>
+    4. Give the client their <b>username + password</b> and the site link.
+  </div>
+</div>
+
+<script>
+const SALT="pmp_sim_v1"; // must match index.html
+async function sha256(text){
+  const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+document.getElementById("gen").onclick=async()=>{
+  const name=document.getElementById("name").value.trim();
+  const u=document.getElementById("user").value.trim().toLowerCase();
+  const p=document.getElementById("pass").value;
+  if(!u||!p){alert("Username and password are required.");return;}
+  const h=await sha256(SALT+":"+p);
+  const line=JSON.stringify({u,h,name:name||u});
+  document.getElementById("jsonline").textContent=line;
+  document.getElementById("out").classList.add("show");
+};
+document.getElementById("copy").onclick=()=>{
+  navigator.clipboard.writeText(document.getElementById("jsonline").textContent)
+    .then(()=>{const b=document.getElementById("copy");b.textContent="Copied ✓";setTimeout(()=>b.textContent="Copy to clipboard",1500);});
+};
+</script>
+</body>
+</html>

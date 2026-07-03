@@ -27,6 +27,24 @@ header.app{background:linear-gradient(120deg,var(--bg),var(--bg2));color:#fff;po
 .langtabs{display:flex;background:rgba(255,255,255,.1);border-radius:10px;padding:3px}
 .langtabs button{background:none;color:#cbd5e1;padding:6px 14px;border-radius:8px;font-weight:600;font-size:14px}
 .langtabs button.on{background:#fff;color:var(--brand-d)}
+.hright{display:flex;align-items:center;gap:14px}
+.userbox{display:flex;align-items:center;gap:10px}
+.uname{font-weight:700;font-size:14px;color:#e2e8f0}
+.uname::before{content:"👤 ";}
+.logout{background:rgba(255,255,255,.12);color:#fff;padding:7px 12px;border-radius:8px;font-weight:600;font-size:13px}
+.logout:hover{background:rgba(255,255,255,.22)}
+
+/* Login */
+#login{min-height:calc(100vh - 64px);display:grid;place-items:center;padding:24px}
+.logincard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:38px 34px;max-width:400px;width:100%;box-shadow:0 30px 60px -20px rgba(2,6,23,.35);text-align:center}
+.logincard .lock{width:60px;height:60px;border-radius:16px;margin:0 auto 16px;background:linear-gradient(135deg,var(--brand2),#a855f7);display:grid;place-items:center;font-size:28px;box-shadow:0 12px 24px -10px var(--brand)}
+.logincard h2{margin:0 0 6px;font-size:23px}
+.logincard p{color:var(--muted);margin:0 0 24px;font-size:14px;line-height:1.5}
+.logincard label{display:block;text-align:left;font-size:13px;font-weight:600;color:#334155;margin:14px 0 6px}
+.logincard input{width:100%;padding:13px 15px;border-radius:11px;border:1.5px solid var(--line);font-size:15px;transition:.12s}
+.logincard input:focus{outline:none;border-color:var(--brand)}
+.loginerr{color:var(--red);font-size:13.5px;font-weight:600;margin-top:14px;min-height:18px}
+.loginhint{margin-top:20px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
 
 .hero{text-align:center;padding:40px 0 10px}
 .hero h1{font-size:34px;margin:0 0 8px;font-weight:800}
@@ -156,15 +174,37 @@ header.app{background:linear-gradient(120deg,var(--bg),var(--bg2));color:#fff;po
 <header class="app">
   <div class="wrap hbar">
     <div class="logo"><span class="dot">✓</span> PMP Simulator</div>
-    <div class="langtabs" id="langtabs">
-      <button data-lang="en" class="on">EN</button>
-      <button data-lang="fr">FR</button>
+    <div class="hright" id="hright">
+      <div class="langtabs" id="langtabs">
+        <button data-lang="en" class="on">EN</button>
+        <button data-lang="fr">FR</button>
+      </div>
+      <div class="userbox hidden" id="userbox">
+        <span class="uname" id="uname"></span>
+        <button class="logout" id="logoutBtn" title="Log out">Log out</button>
+      </div>
     </div>
   </div>
 </header>
 
+<!-- LOGIN -->
+<main id="login" class="hidden">
+  <form class="logincard" id="loginForm" autocomplete="off">
+    <div class="lock">🔒</div>
+    <h2 id="loginTitle">Student Login</h2>
+    <p id="loginSub">Enter the username and password provided to you.</p>
+    <label id="lblUser">Username</label>
+    <input id="loginUser" type="text" autocomplete="username" autocapitalize="none" spellcheck="false">
+    <label id="lblPass">Password</label>
+    <input id="loginPass" type="password" autocomplete="current-password">
+    <div class="loginerr" id="loginErr"></div>
+    <button type="submit" class="btn wide" id="loginBtn" style="margin-top:8px">Log in</button>
+    <div class="loginhint" id="loginHint">Don’t have an account? Contact your instructor for access.</div>
+  </form>
+</main>
+
 <!-- HOME -->
-<main id="home">
+<main id="home" class="hidden">
   <div class="wrap">
     <div class="hero">
       <h1 id="heroTitle"></h1>
@@ -274,33 +314,99 @@ const STR={
       full:"Full Exams (180)",mini:"Mini Exams (60)",quiz:"Quizzes (25)",start:"Start",questions:"questions",min:"min",
       best:"Best",none:"Not attempted yet",select:"Select",answers:"answers",prev:"Previous Questions",remaining:"questions remaining",
       submit:"Submit Answer",finish:"Finish Exam",prevBtn:"Previous",qtime:"Question",
-      breakTitle:"Section Break",breakMsg:"Take a moment to rest. The exam clock is paused. The next section starts automatically when the break ends."},
+      breakTitle:"Section Break",breakMsg:"Take a moment to rest. The exam clock is paused. The next section starts automatically when the break ends.",
+      loginTitle:"Student Login",loginSub:"Enter the username and password provided to you.",lblUser:"Username",lblPass:"Password",loginBtn:"Log in",loginHint:"Don’t have an account? Contact your instructor for access.",logout:"Log out"},
   fr:{hero:"Entraînez-vous jusqu'à la réussite",sub:"Entraînement PMP réaliste — une question à la fois, chrono par question, pauses de section, score instantané et explications complètes.",
       full:"Examens complets (180)",mini:"Mini examens (60)",quiz:"Quiz (25)",start:"Commencer",questions:"questions",min:"min",
       best:"Meilleur",none:"Jamais tenté",select:"Sélectionnez",answers:"réponses",prev:"Questions précédentes",remaining:"questions restantes",
       submit:"Valider la réponse",finish:"Terminer l'examen",prevBtn:"Précédent",qtime:"Question",
-      breakTitle:"Pause de section",breakMsg:"Prenez un moment de repos. Le chrono est en pause. La section suivante démarre automatiquement à la fin de la pause."}
+      breakTitle:"Pause de section",breakMsg:"Prenez un moment de repos. Le chrono est en pause. La section suivante démarre automatiquement à la fin de la pause.",
+      loginTitle:"Connexion étudiant",loginSub:"Saisissez le nom d’utilisateur et le mot de passe qui vous ont été fournis.",lblUser:"Nom d’utilisateur",lblPass:"Mot de passe",loginBtn:"Se connecter",loginHint:"Pas de compte ? Contactez votre formateur pour obtenir un accès.",logout:"Déconnexion"}
 };
 const T=()=>STR[state.lang];
 
-/* storage */
-function history(){try{return JSON.parse(localStorage.getItem("pmp_hist")||"{}")}catch(e){return{}}}
-function saveAttempt(id,pct){const h=history();const r=h[id]||{best:0,attempts:0};r.attempts++;r.best=Math.max(r.best,pct);r.last=pct;h[id]=r;localStorage.setItem("pmp_hist",JSON.stringify(h));}
+/* auth */
+const SALT="pmp_sim_v1"; // must match admin.html
+let currentUser=null;
+async function sha256(text){
+  const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function getSession(){try{return JSON.parse(localStorage.getItem("pmp_session")||"null")}catch(e){return null}}
+function setSession(u){currentUser=u;localStorage.setItem("pmp_session",JSON.stringify(u));}
+function clearSession(){currentUser=null;localStorage.removeItem("pmp_session");}
 
-/* init */
-async function init(){manifest=await (await fetch(DATA_DIR+"manifest.json")).json();bindHome();applyLang();renderHome();}
-function bindHome(){
+/* storage (per user) */
+function histKey(){return "pmp_hist_"+(currentUser?currentUser.u:"anon");}
+function history(){try{return JSON.parse(localStorage.getItem(histKey())||"{}")}catch(e){return{}}}
+function saveAttempt(id,pct){const h=history();const r=h[id]||{best:0,attempts:0};r.attempts++;r.best=Math.max(r.best,pct);r.last=pct;h[id]=r;localStorage.setItem(histKey(),JSON.stringify(h));}
+
+/* init + auth gate */
+let manifestLoaded=false;
+async function init(){
+  bindAuth();
+  const s=getSession();
+  if(s){ currentUser=s; await enterApp(); }
+  else { showLogin(); }
+}
+function showLogin(){
+  $("#userbox").classList.add("hidden");
+  $("#langtabs").classList.remove("hidden");
+  applyLang();
+  show("login");
+  setTimeout(()=>$("#loginUser").focus(),50);
+}
+async function enterApp(){
+  $("#uname").textContent=currentUser.name||currentUser.u;
+  $("#userbox").classList.remove("hidden");
+  if(!manifestLoaded){
+    manifest=await (await fetch(DATA_DIR+"manifest.json")).json();
+    manifestLoaded=true;
+    bindHome();
+  }
+  applyLang(); renderHome(); show("home");
+}
+function bindAuth(){
   $("#langtabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.lang=b.dataset.lang;
     document.querySelectorAll("#langtabs button").forEach(x=>x.classList.toggle("on",x===b));applyLang();renderHome();});
+  $("#loginForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const u=$("#loginUser").value.trim().toLowerCase();
+    const p=$("#loginPass").value;
+    const err=$("#loginErr"); err.textContent="";
+    if(!u||!p){err.textContent="Please enter your username and password.";return;}
+    $("#loginBtn").disabled=true;
+    try{
+      const users=await (await fetch(DATA_DIR+"users.json?_="+Date.now())).json();
+      const h=await sha256(SALT+":"+p);
+      const found=users.find(x=>x.u.toLowerCase()===u && x.h===h);
+      if(found){ setSession({u:found.u,name:found.name}); $("#loginPass").value=""; await enterApp(); }
+      else { err.textContent="Incorrect username or password."; }
+    }catch(ex){ err.textContent="Could not verify login. Try again."; }
+    $("#loginBtn").disabled=false;
+  });
+  $("#logoutBtn").addEventListener("click",()=>{
+    if(session && !session.done){ if(!confirm("You have an exam in progress. Log out anyway?")) return; }
+    clearInterval(session&&session.timerId); clearInterval(breakTick);
+    window.onbeforeunload=null; session=null;
+    clearSession(); showLogin();
+  });
+}
+function bindHome(){
   $("#typeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.type=b.dataset.type;
     document.querySelectorAll("#typeSeg button").forEach(x=>x.classList.toggle("on",x===b));renderHome();});
 }
 function applyLang(){
   $("#heroTitle").textContent=T().hero;$("#heroSub").textContent=T().sub;
   const s=document.querySelectorAll("#typeSeg button");s[0].textContent=T().full;s[1].textContent=T().mini;s[2].textContent=T().quiz;
+  $("#loginTitle").textContent=T().loginTitle;$("#loginSub").textContent=T().loginSub;
+  $("#lblUser").textContent=T().lblUser;$("#lblPass").textContent=T().lblPass;
+  $("#loginBtn").textContent=T().loginBtn;$("#loginHint").textContent=T().loginHint;
+  $("#logoutBtn").textContent=T().logout;
   document.documentElement.lang=state.lang;
 }
 function renderHome(){
+  if(!manifestLoaded)return;
   const h=history();
   const items=manifest.filter(m=>m.lang===state.lang&&m.type===state.type);
   const grid=$("#cards");grid.innerHTML="";
@@ -523,7 +629,7 @@ function renderReview(filter){
 }
 
 /* helpers */
-function show(id){["home","exam","breakScreen","results","reviewScreen"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
+function show(id){["login","home","exam","breakScreen","results","reviewScreen"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function showModal(h){$("#modalRoot").innerHTML=`<div class="overlay"><div class="modal">${h}</div></div>`;}
