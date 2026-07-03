@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMP Exam Simulator</title>
+<style>
+:root{
+  --bg:#0f172a; --bg2:#1e293b; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+  --line:#e2e8f0; --brand:#4f46e5; --brand2:#6366f1; --brand-d:#4338ca;
+  --green:#16a34a; --green-bg:#dcfce7; --red:#dc2626; --red-bg:#fee2e2;
+  --amber:#d97706; --amber-bg:#fef3c7;
+  --shadow:0 10px 30px -12px rgba(2,6,23,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);background:linear-gradient(180deg,#f1f5f9,#e2e8f0);min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none}
+.hidden{display:none!important}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+header.app{background:linear-gradient(120deg,var(--bg),var(--bg2));color:#fff;position:sticky;top:0;z-index:40;box-shadow:0 4px 20px -8px rgba(2,6,23,.6)}
+.hbar{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px;font-size:19px}
+.logo .dot{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand2),#a855f7);display:grid;place-items:center;font-size:15px}
+.langtabs{display:flex;background:rgba(255,255,255,.1);border-radius:10px;padding:3px}
+.langtabs button{background:none;color:#cbd5e1;padding:6px 14px;border-radius:8px;font-weight:600;font-size:14px}
+.langtabs button.on{background:#fff;color:var(--brand-d)}
+
+.hero{text-align:center;padding:40px 0 10px}
+.hero h1{font-size:34px;margin:0 0 8px;font-weight:800}
+.hero p{color:var(--muted);margin:0 auto;font-size:16px;max-width:640px}
+.seg{display:flex;gap:8px;justify-content:center;margin:26px 0 8px;flex-wrap:wrap}
+.seg button{background:#fff;border:1px solid var(--line);color:var(--muted);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;transition:.15s}
+.seg button.on{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 6px 16px -8px var(--brand)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:16px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.18s}
+.card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -16px rgba(2,6,23,.35)}
+.card .tag{align-self:flex-start;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:4px 10px;border-radius:999px;margin-bottom:12px}
+.tag.full{background:#ede9fe;color:#6d28d9}.tag.mini{background:#dbeafe;color:#1d4ed8}.tag.quiz{background:#dcfce7;color:#15803d}
+.card h3{margin:0 0 6px;font-size:17px;line-height:1.3}
+.meta{color:var(--muted);font-size:13px;display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 14px}
+.meta b{color:var(--ink)}
+.best{font-size:12px;color:var(--muted);margin-bottom:12px}
+.best .pill{font-weight:700}
+.btn{background:var(--brand);color:#fff;padding:11px 16px;border-radius:11px;font-weight:700;font-size:14px;transition:.15s;text-align:center}
+.btn:hover{background:var(--brand-d)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+.btn.ghost:hover{background:#f8fafc}
+.btn.wide{width:100%}
+.mt{margin-top:auto}
+
+/* Exam */
+.examtop{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.examtop .row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:8px 0;flex-wrap:wrap}
+.etitle{font-weight:700;font-size:15px}
+.stats-inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:7px;background:#f1f5f9;padding:7px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip b{color:var(--ink)}
+.chip .ic{font-size:15px}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:18px;background:#eef2ff;color:var(--brand-d);padding:7px 14px;border-radius:10px;letter-spacing:.5px}
+.timer.warn{background:var(--amber-bg);color:var(--amber)}
+.timer.danger{background:var(--red-bg);color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.55}}
+.progbar{height:4px;background:var(--line)}
+.progbar span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),#a855f7);transition:width .3s}
+.examlayout{display:grid;grid-template-columns:280px 1fr;gap:22px;padding:24px 0 40px;align-items:start}
+
+.aside{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);position:sticky;top:82px;max-height:calc(100vh - 100px);display:flex;flex-direction:column}
+.aside h4{margin:0 0 4px;font-size:15px}
+.aside .remaining{font-size:12px;color:var(--muted);margin-bottom:12px}
+.prevlist{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1}
+.prevlist .pq{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;transition:.12s;background:#fff;text-align:left;width:100%}
+.prevlist .pq:hover{border-color:var(--brand2);background:#fafaff}
+.prevlist .pq.cur{border-color:var(--brand);background:#eef2ff}
+.prevlist .pq .qn{font-weight:700;font-size:13px}
+.prevlist .pq .qn small{display:block;font-weight:500;color:var(--muted);font-size:11px;margin-top:2px}
+.prevlist .pq .tm{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.prevlist .pq .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex:0 0 8px}
+.prevlist .empty{color:var(--muted);font-size:13px;text-align:center;padding:20px 0}
+
+.qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:var(--shadow);min-height:340px}
+.qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.qnum{font-weight:700;color:var(--brand)}
+.badges{display:flex;gap:8px;align-items:center}
+.diff{font-size:11px;font-weight:700;text-transform:capitalize;padding:3px 9px;border-radius:999px;background:#f1f5f9;color:var(--muted)}
+.multiflag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--amber-bg);color:var(--amber)}
+.qtext{font-size:18px;line-height:1.55;margin:4px 0 20px;white-space:pre-wrap}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.12s;background:#fff}
+.opt:hover{border-color:var(--brand2);background:#fafaff}
+.opt.sel{border-color:var(--brand);background:#eef2ff}
+.opt .mark{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--muted);transition:.12s}
+.opt.checkbox .mark{border-radius:7px}
+.opt.sel .mark{background:var(--brand);border-color:var(--brand);color:#fff}
+.opt .otext{padding-top:2px;line-height:1.45}
+.navbtns{display:flex;justify-content:space-between;gap:10px;margin-top:22px;align-items:center}
+.navbtns .hint{font-size:12px;color:var(--muted)}
+
+/* Break */
+.breakscreen{text-align:center;padding:60px 0}
+.breakscreen .big{font-size:56px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--brand);margin:16px 0}
+.breakscreen h2{font-size:26px;margin:0}
+.breakscreen p{color:var(--muted);max-width:520px;margin:10px auto 24px;line-height:1.6}
+
+/* Results */
+.result{padding:36px 0 60px;text-align:center}
+.scorering{width:180px;height:180px;margin:10px auto 18px;border-radius:50%;display:grid;place-items:center;position:relative}
+.scorering .inner{position:absolute;inset:14px;background:#fff;border-radius:50%;display:grid;place-items:center}
+.scorering .pct{font-size:44px;font-weight:800;line-height:1}
+.scorering .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.verdict{font-size:24px;font-weight:800;margin:4px 0}
+.verdict.pass{color:var(--green)}.verdict.fail{color:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;max-width:720px;margin:24px auto}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.stat .n{font-size:26px;font-weight:800}
+.stat .t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+
+/* Review */
+.review{padding:24px 0 60px}
+.rq{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.rq .rqh{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;align-items:center}
+.rq .status{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.status.ok{background:var(--green-bg);color:var(--green)}
+.status.no{background:var(--red-bg);color:var(--red)}
+.status.skip{background:#f1f5f9;color:var(--muted)}
+.ropt{padding:9px 13px;border-radius:9px;margin:6px 0;font-size:14.5px;line-height:1.4;border:1px solid transparent;display:flex;gap:8px}
+.ropt.correct{background:var(--green-bg);border-color:#86efac}
+.ropt.wrong{background:var(--red-bg);border-color:#fca5a5}
+.ropt .ic{font-weight:800}
+.expl{margin-top:12px;padding:13px 15px;background:#f8fafc;border-left:3px solid var(--brand);border-radius:0 8px 8px 0;font-size:14px;line-height:1.55;color:#334155}
+.expl b{color:var(--brand-d)}
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filterbar button{background:#fff;border:1px solid var(--line);color:var(--muted);padding:7px 14px;border-radius:999px;font-weight:600;font-size:13px}
+.filterbar button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:60;display:grid;place-items:center;padding:20px}
+.modal{background:#fff;border-radius:18px;padding:28px;max-width:440px;width:100%;box-shadow:0 30px 60px -20px rgba(2,6,23,.6);text-align:center}
+.modal h3{margin:0 0 8px;font-size:20px}
+.modal p{color:var(--muted);margin:0 0 20px;line-height:1.5}
+.spinner{width:38px;height:38px;border:4px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.foot{text-align:center;color:var(--muted);font-size:12px;padding:22px;border-top:1px solid var(--line)}
+
+@media(max-width:860px){
+  .examlayout{grid-template-columns:1fr}
+  .aside{position:static;order:2;max-height:none}
+  .prevlist{max-height:220px}
+  .hero h1{font-size:27px}
+}
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="wrap hbar">
+    <div class="logo"><span class="dot">✓</span> PMP Simulator</div>
+    <div class="langtabs" id="langtabs">
+      <button data-lang="en" class="on">EN</button>
+      <button data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+
+<!-- HOME -->
+<main id="home">
+  <div class="wrap">
+    <div class="hero">
+      <h1 id="heroTitle"></h1>
+      <p id="heroSub"></p>
+      <div class="seg" id="typeSeg">
+        <button data-type="full" class="on"></button>
+        <button data-type="mini"></button>
+        <button data-type="quiz"></button>
+      </div>
+    </div>
+    <div class="grid" id="cards"></div>
+  </div>
+  <div class="foot">Personal study tool • Progress is saved in this browser only.</div>
+</main>
+
+<!-- EXAM -->
+<main id="exam" class="hidden">
+  <div class="examtop">
+    <div class="wrap row">
+      <div class="etitle" id="exTitle"></div>
+      <div class="stats-inline">
+        <div class="chip"><span class="ic">❓</span><span id="qcounter">1/180</span></div>
+        <div class="chip"><span class="ic">⏱️</span><span id="qtimeLbl">Question</span>: <b id="qtime">00:00</b></div>
+        <div class="timer" id="timer">00:00</div>
+      </div>
+    </div>
+    <div class="progbar"><span id="prog" style="width:0%"></span></div>
+  </div>
+  <div class="wrap examlayout">
+    <div class="aside">
+      <h4 id="prevTitle">Previous Questions</h4>
+      <div class="remaining" id="remaining"></div>
+      <div class="prevlist" id="prevlist"></div>
+      <div style="margin-top:14px"><button class="btn wide ghost" id="endBtn">End &amp; Submit</button></div>
+    </div>
+    <div>
+      <div class="qcard" id="qcard"></div>
+      <div class="navbtns">
+        <button class="btn ghost" id="prevBtn">← <span id="prevLbl">Previous</span></button>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="hint" id="submitHint"></span>
+          <button class="btn" id="submitBtn" disabled></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- BREAK -->
+<main id="breakScreen" class="hidden">
+  <div class="wrap breakscreen">
+    <h2 id="breakTitle">Section Break</h2>
+    <div class="big" id="breakTimer">10:00</div>
+    <p id="breakMsg"></p>
+    <button class="btn" id="resumeBtn">Skip break &amp; continue</button>
+  </div>
+</main>
+
+<!-- RESULTS -->
+<main id="results" class="hidden">
+  <div class="wrap result">
+    <div class="scorering" id="ring">
+      <div class="inner"><div><div class="pct" id="pct">0%</div><div class="lbl">Score</div></div></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <div id="verdictSub" style="color:var(--muted)"></div>
+    <div class="stats" id="stats"></div>
+    <div class="actions">
+      <button class="btn" id="reviewBtn">Review Answers</button>
+      <button class="btn ghost" id="retakeBtn">Retake</button>
+      <button class="btn ghost" id="homeBtn">Home</button>
+    </div>
+  </div>
+</main>
+
+<!-- REVIEW -->
+<main id="reviewScreen" class="hidden">
+  <div class="wrap review">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0;flex-wrap:wrap;gap:10px">
+      <h2 style="margin:0">Answer Review</h2>
+      <button class="btn ghost" id="backToResults">← Back to results</button>
+    </div>
+    <div class="filterbar" id="reviewFilter">
+      <button data-f="all" class="on">All</button>
+      <button data-f="no">Incorrect</button>
+      <button data-f="skip">Skipped</button>
+      <button data-f="ok">Correct</button>
+    </div>
+    <div id="reviewList"></div>
+  </div>
+</main>
+
+<div id="modalRoot"></div>
+
+<script>
+const DATA_DIR="data/";
+const LETTERS=["A","B","C","D","E","F"];
+const PASS=60;
+const TIMES={full:240,mini:75,quiz:30};      // total minutes
+const SECTION=60, BREAK=600;                  // break every 60 questions, 10 min
+const $=s=>document.querySelector(s);
+
+let manifest=[], state={lang:"en",type:"full"}, session=null, breakTick=null;
+
+const STR={
+  en:{hero:"Practice Until You Pass",sub:"Realistic PMP practice — one question at a time, per-question timing, section breaks, instant scoring and full explanations.",
+      full:"Full Exams (180)",mini:"Mini Exams (60)",quiz:"Quizzes (25)",start:"Start",questions:"questions",min:"min",
+      best:"Best",none:"Not attempted yet",select:"Select",answers:"answers",prev:"Previous Questions",remaining:"questions remaining",
+      submit:"Submit Answer",finish:"Finish Exam",prevBtn:"Previous",qtime:"Question",
+      breakTitle:"Section Break",breakMsg:"Take a moment to rest. The exam clock is paused. The next section starts automatically when the break ends."},
+  fr:{hero:"Entraînez-vous jusqu'à la réussite",sub:"Entraînement PMP réaliste — une question à la fois, chrono par question, pauses de section, score instantané et explications complètes.",
+      full:"Examens complets (180)",mini:"Mini examens (60)",quiz:"Quiz (25)",start:"Commencer",questions:"questions",min:"min",
+      best:"Meilleur",none:"Jamais tenté",select:"Sélectionnez",answers:"réponses",prev:"Questions précédentes",remaining:"questions restantes",
+      submit:"Valider la réponse",finish:"Terminer l'examen",prevBtn:"Précédent",qtime:"Question",
+      breakTitle:"Pause de section",breakMsg:"Prenez un moment de repos. Le chrono est en pause. La section suivante démarre automatiquement à la fin de la pause."}
+};
+const T=()=>STR[state.lang];
+
+/* storage */
+function history(){try{return JSON.parse(localStorage.getItem("pmp_hist")||"{}")}catch(e){return{}}}
+function saveAttempt(id,pct){const h=history();const r=h[id]||{best:0,attempts:0};r.attempts++;r.best=Math.max(r.best,pct);r.last=pct;h[id]=r;localStorage.setItem("pmp_hist",JSON.stringify(h));}
+
+/* init */
+async function init(){manifest=await (await fetch(DATA_DIR+"manifest.json")).json();bindHome();applyLang();renderHome();}
+function bindHome(){
+  $("#langtabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.lang=b.dataset.lang;
+    document.querySelectorAll("#langtabs button").forEach(x=>x.classList.toggle("on",x===b));applyLang();renderHome();});
+  $("#typeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.type=b.dataset.type;
+    document.querySelectorAll("#typeSeg button").forEach(x=>x.classList.toggle("on",x===b));renderHome();});
+}
+function applyLang(){
+  $("#heroTitle").textContent=T().hero;$("#heroSub").textContent=T().sub;
+  const s=document.querySelectorAll("#typeSeg button");s[0].textContent=T().full;s[1].textContent=T().mini;s[2].textContent=T().quiz;
+  document.documentElement.lang=state.lang;
+}
+function renderHome(){
+  const h=history();
+  const items=manifest.filter(m=>m.lang===state.lang&&m.type===state.type);
+  const grid=$("#cards");grid.innerHTML="";
+  if(!items.length){grid.innerHTML='<p style="color:var(--muted)">No content here.</p>';return;}
+  for(const m of items){
+    const mins=TIMES[m.type];const rec=h[m.id];
+    const best=rec?`<span class="pill" style="color:${rec.best>=PASS?'var(--green)':'var(--amber)'}">${rec.best}%</span> · ${rec.attempts}×`
+                  :`<span style="color:var(--muted)">${T().none}</span>`;
+    const el=document.createElement("div");el.className="card";
+    el.innerHTML=`<span class="tag ${m.type}">${m.type==='full'?'Full Exam':m.type==='mini'?'Mini Exam':'Quiz'}</span>
+      <h3>${escapeHtml(m.title)}</h3>
+      <div class="meta"><span><b>${m.count}</b> ${T().questions}</span><span><b>${mins}</b> ${T().min}</span></div>
+      <div class="best">${T().best}: ${best}</div>
+      <div class="mt"><button class="btn wide">${T().start}</button></div>`;
+    el.querySelector("button").addEventListener("click",()=>startExam(m));
+    grid.appendChild(el);
+  }
+}
+
+/* exam */
+async function startExam(m){
+  showModal(`<div class="spinner"></div><p>Loading ${escapeHtml(m.title)}…</p>`);
+  const data=await (await fetch(DATA_DIR+m.id+".json")).json();
+  closeModal();
+  let qs=data.questions.map(q=>{
+    const opts=shuffle(q.o.map(o=>({t:o.t,c:o.c})));
+    return{text:q.q,opts,expl:q.e,diff:q.d,correctCount:opts.filter(o=>o.c).length,
+           sel:new Set(),answered:false,time:0};
+  });
+  qs=shuffle(qs);
+  session={m,qs,cur:0,maxReached:0,mins:TIMES[m.type],remaining:TIMES[m.type]*60,
+           timerId:null,done:false,onBreak:false};
+  show("exam");
+  $("#exTitle").textContent=m.title;
+  $("#prevTitle").textContent=T().prev;
+  $("#qtimeLbl").textContent=T().qtime;
+  $("#prevLbl").textContent=T().prevBtn;
+  renderQuestion();renderPrevList();
+  startTimer();
+  window.onbeforeunload=()=>session&&!session.done?"Exam in progress.":null;
+}
+
+function startTimer(){
+  updateTotalTimer();updateQTime();
+  session.timerId=setInterval(()=>{
+    if(session.onBreak)return;
+    session.remaining--;session.qs[session.cur].time++;
+    updateTotalTimer();updateQTime();
+    if(session.remaining<=0)finishExam(true);
+  },1000);
+}
+function fmt(s){s=Math.max(0,s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;
+  return (h>0?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0");}
+function updateTotalTimer(){const t=$("#timer");const s=session.remaining;t.textContent=fmt(s);
+  t.classList.toggle("warn",s<=300&&s>60);t.classList.toggle("danger",s<=60);}
+function updateQTime(){$("#qtime").textContent=fmt(session.qs[session.cur].time);}
+
+function renderQuestion(){
+  const q=session.qs[session.cur],multi=q.correctCount>1;
+  $("#qcounter").textContent=(session.cur+1)+"/"+session.qs.length;
+  updateQTime();
+  const c=$("#qcard");
+  c.innerHTML=`<div class="qhead">
+      <span class="qnum">Question ${session.cur+1} / ${session.qs.length}</span>
+      <div class="badges">
+        ${multi?`<span class="multiflag">${T().select} ${q.correctCount} ${T().answers}</span>`:""}
+        ${q.diff?`<span class="diff">${escapeHtml(q.diff)}</span>`:""}
+      </div></div>
+    <div class="qtext">${escapeHtml(q.text)}</div><div id="opts"></div>`;
+  const wrap=c.querySelector("#opts");
+  q.opts.forEach((o,i)=>{
+    const el=document.createElement("div");
+    el.className="opt"+(multi?" checkbox":"")+(q.sel.has(i)?" sel":"");
+    el.innerHTML=`<div class="mark">${multi?(q.sel.has(i)?"✓":""):LETTERS[i]}</div><div class="otext">${escapeHtml(o.t)}</div>`;
+    el.addEventListener("click",()=>{
+      if(multi){q.sel.has(i)?q.sel.delete(i):q.sel.add(i);}else{q.sel.clear();q.sel.add(i);}
+      renderQuestion();
+    });
+    wrap.appendChild(el);
+  });
+  $("#prog").style.width=(100*(session.cur+1)/session.qs.length)+"%";
+  $("#prevBtn").disabled=session.cur===0;
+  const last=session.cur===session.qs.length-1;
+  const sb=$("#submitBtn");
+  sb.textContent=last?T().finish:T().submit;
+  sb.disabled=q.sel.size===0;
+  $("#submitHint").textContent = multi && q.sel.size!==q.correctCount ? `${T().select} ${q.correctCount}` : "";
+  renderPrevList();
+}
+
+function renderPrevList(){
+  const answered=session.qs.filter(q=>q.answered).length;
+  $("#remaining").textContent=(session.qs.length-answered)+" "+T().remaining;
+  const list=$("#prevlist");list.innerHTML="";
+  let any=false;
+  session.qs.forEach((q,i)=>{
+    if(i>session.maxReached)return;
+    if(!q.answered && i!==session.cur)return;
+    any=true;
+    const b=document.createElement("button");
+    b.className="pq"+(i===session.cur?" cur":"");
+    b.innerHTML=`<span style="display:flex;align-items:center;gap:8px">
+        ${q.answered?'<span class="dot"></span>':'<span class="dot" style="background:var(--line)"></span>'}
+        <span class="qn">Question ${i+1}${i===session.cur?' <small>current</small>':''}</span></span>
+      <span class="tm">${fmt(q.time)}</span>`;
+    b.addEventListener("click",()=>{session.cur=i;renderQuestion();});
+    list.appendChild(b);
+  });
+  if(!any)list.innerHTML=`<div class="empty">—</div>`;
+  list.scrollTop=list.scrollHeight;
+}
+
+$("#prevBtn").onclick=()=>{if(session.cur>0){session.cur--;renderQuestion();}};
+$("#submitBtn").onclick=()=>{
+  const q=session.qs[session.cur];
+  if(q.sel.size===0)return;
+  q.answered=true;
+  if(session.cur===session.qs.length-1){confirmFinish();return;}
+  const nextIndex=session.cur+1;
+  // section break?
+  if(nextIndex%SECTION===0 && nextIndex<session.qs.length){
+    advanceTo(nextIndex,true);
+  }else{
+    advanceTo(nextIndex,false);
+  }
+};
+function advanceTo(i,withBreak){
+  session.cur=i;
+  if(i>session.maxReached)session.maxReached=i;
+  if(withBreak){startBreak();}
+  renderQuestion();
+}
+$("#endBtn").onclick=()=>confirmFinish();
+
+/* break */
+function startBreak(){
+  session.onBreak=true;
+  let left=BREAK;
+  show("breakScreen");
+  const secNum=Math.floor(session.cur/SECTION)+1;
+  $("#breakTitle").textContent=T().breakTitle+" • "+(state.lang==='fr'?'Section':'Section')+" "+secNum;
+  $("#breakMsg").textContent=T().breakMsg;
+  $("#breakTimer").textContent=fmt(left);
+  const end=()=>{clearInterval(breakTick);session.onBreak=false;show("exam");renderQuestion();};
+  breakTick=setInterval(()=>{left--;$("#breakTimer").textContent=fmt(left);if(left<=0)end();},1000);
+  $("#resumeBtn").onclick=end;
+}
+
+function confirmFinish(){
+  const answered=session.qs.filter(q=>q.answered).length;
+  const left=session.qs.length-answered;
+  showModal(`<h3>Submit exam?</h3>
+    <p>${answered} answered, <b>${left}</b> unanswered.<br>You can't change answers after submitting.</p>
+    <div class="actions"><button class="btn" id="doSubmit">Submit now</button>
+    <button class="btn ghost" id="keepGoing">Keep going</button></div>`);
+  $("#doSubmit").onclick=()=>finishExam(false);
+  $("#keepGoing").onclick=closeModal;
+}
+
+function finishExam(timeUp){
+  clearInterval(session.timerId);clearInterval(breakTick);
+  session.done=true;session.onBreak=false;closeModal();window.onbeforeunload=null;
+  let correct=0,wrong=0,skip=0;
+  session.qs.forEach(q=>{
+    if(!q.sel.size){skip++;q.result="skip";return;}
+    const chosen=[...q.sel].sort().join(",");
+    const right=q.opts.map((o,i)=>o.c?i:null).filter(x=>x!==null).sort().join(",");
+    if(chosen===right){correct++;q.result="ok";}else{wrong++;q.result="no";}
+  });
+  const pct=Math.round(100*correct/session.qs.length);
+  const used=session.qs.reduce((a,q)=>a+q.time,0);
+  session.summary={correct,wrong,skip,pct,timeUp,timeTaken:used};
+  saveAttempt(session.m.id,pct);
+  renderResults();
+}
+
+/* results */
+function renderResults(){
+  const s=session.summary;show("results");const pass=s.pct>=PASS;
+  $("#pct").textContent=s.pct+"%";
+  const col=pass?"var(--green)":"var(--red)";
+  $("#ring").style.background=`conic-gradient(${col} ${s.pct*3.6}deg, var(--line) 0deg)`;
+  const v=$("#verdict");v.textContent=pass?"PASS 🎉":"Keep practicing";v.className="verdict "+(pass?"pass":"fail");
+  $("#verdictSub").textContent=(s.timeUp?"⏱ Time expired. ":"")+`Passing score is ${PASS}%.`;
+  const mm=Math.floor(s.timeTaken/60),ss=s.timeTaken%60;
+  $("#stats").innerHTML=`
+    <div class="stat"><div class="n" style="color:var(--green)">${s.correct}</div><div class="t">Correct</div></div>
+    <div class="stat"><div class="n" style="color:var(--red)">${s.wrong}</div><div class="t">Incorrect</div></div>
+    <div class="stat"><div class="n" style="color:var(--muted)">${s.skip}</div><div class="t">Skipped</div></div>
+    <div class="stat"><div class="n">${session.qs.length}</div><div class="t">Total</div></div>
+    <div class="stat"><div class="n">${mm}m ${String(ss).padStart(2,"0")}s</div><div class="t">Time used</div></div>`;
+}
+$("#retakeBtn").onclick=()=>startExam(session.m);
+$("#homeBtn").onclick=()=>{session=null;show("home");renderHome();};
+$("#reviewBtn").onclick=()=>renderReview("all");
+$("#backToResults").onclick=()=>show("results");
+$("#reviewFilter").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("#reviewFilter button").forEach(x=>x.classList.toggle("on",x===b));renderReview(b.dataset.f);});
+
+/* review */
+function renderReview(filter){
+  show("reviewScreen");const list=$("#reviewList");list.innerHTML="";let shown=0;
+  session.qs.forEach((q,idx)=>{
+    if(filter!=="all"&&q.result!==filter)return;shown++;
+    const statusTxt={ok:"Correct",no:"Incorrect",skip:"Skipped"}[q.result];
+    const statusCls=q.result;
+    const opts=q.opts.map((o,i)=>{
+      const chosen=q.sel.has(i);let cls="ropt",ic="";
+      if(o.c){cls+=" correct";ic="✓";}else if(chosen){cls+=" wrong";ic="✗";}
+      const you=chosen?' <b>(your answer)</b>':'';
+      return `<div class="${cls}"><span class="ic">${ic||LETTERS[i]}</span><span>${escapeHtml(o.t)}${you}</span></div>`;
+    }).join("");
+    const el=document.createElement("div");el.className="rq";
+    el.innerHTML=`<div class="rqh"><span class="qnum">Q${idx+1} · ${fmt(q.time)}</span><span class="status ${statusCls}">${statusTxt}</span></div>
+      <div class="qtext" style="font-size:16px">${escapeHtml(q.text)}</div>${opts}
+      ${q.expl?`<div class="expl"><b>Explanation:</b> ${escapeHtml(q.expl)}</div>`:""}`;
+    list.appendChild(el);
+  });
+  if(!shown)list.innerHTML='<p style="color:var(--muted)">Nothing here.</p>';
+}
+
+/* helpers */
+function show(id){["home","exam","breakScreen","results","reviewScreen"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function showModal(h){$("#modalRoot").innerHTML=`<div class="overlay"><div class="modal">${h}</div></div>`;}
+function closeModal(){$("#modalRoot").innerHTML="";}
+
+init();
+</script>
+</body>
+</html>
